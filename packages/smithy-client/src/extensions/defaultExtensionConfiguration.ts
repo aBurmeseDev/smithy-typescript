@@ -1,7 +1,9 @@
 import type { DefaultExtensionConfiguration } from "@smithy/types";
 
-import { getChecksumConfiguration, PartialChecksumRuntimeConfigType, resolveChecksumRuntimeConfig } from "./checksum";
-import { getRetryConfiguration, PartialRetryRuntimeConfigType, resolveRetryRuntimeConfig } from "./retry";
+import type { PartialChecksumRuntimeConfigType } from "./checksum";
+import { getChecksumConfiguration, resolveChecksumRuntimeConfig } from "./checksum";
+import type { PartialRetryRuntimeConfigType } from "./retry";
+import { getRetryConfiguration, resolveRetryRuntimeConfig } from "./retry";
 
 /**
  * @internal
@@ -14,10 +16,7 @@ export type DefaultExtensionRuntimeConfigType = PartialRetryRuntimeConfigType & 
  * Helper function to resolve default extension configuration from runtime config
  */
 export const getDefaultExtensionConfiguration = (runtimeConfig: DefaultExtensionRuntimeConfigType) => {
-  return {
-    ...getChecksumConfiguration(runtimeConfig),
-    ...getRetryConfiguration(runtimeConfig),
-  };
+  return Object.assign(getChecksumConfiguration(runtimeConfig), getRetryConfiguration(runtimeConfig));
 };
 
 /**
@@ -36,8 +35,5 @@ export const getDefaultClientConfiguration = getDefaultExtensionConfiguration;
 export const resolveDefaultRuntimeConfig = (
   config: DefaultExtensionConfiguration
 ): DefaultExtensionRuntimeConfigType => {
-  return {
-    ...resolveChecksumRuntimeConfig(config),
-    ...resolveRetryRuntimeConfig(config),
-  };
+  return Object.assign(resolveChecksumRuntimeConfig(config), resolveRetryRuntimeConfig(config));
 };

@@ -1,10 +1,11 @@
-import { Endpoint, Provider, RegionInfoProvider, UrlParser } from "@smithy/types";
+import type { Endpoint, Provider, RegionInfoProvider, UrlParser } from "@smithy/types";
 import { normalizeProvider } from "@smithy/util-middleware";
 
 import { getEndpointFromRegion } from "./utils/getEndpointFromRegion";
 
 /**
  * @public
+ * @deprecated see \@smithy/middleware-endpoint resolveEndpointConfig.
  */
 export interface EndpointsInputConfig {
   /**
@@ -26,6 +27,7 @@ export interface EndpointsInputConfig {
 
 /**
  * @internal
+ * @deprecated see \@smithy/middleware-endpoint resolveEndpointConfig.
  */
 interface PreviouslyResolved {
   regionInfoProvider: RegionInfoProvider;
@@ -36,6 +38,7 @@ interface PreviouslyResolved {
 
 /**
  * @internal
+ * @deprecated see \@smithy/middleware-endpoint resolveEndpointConfig.
  */
 export interface EndpointsResolvedConfig extends Required<EndpointsInputConfig> {
   /**
@@ -65,14 +68,13 @@ export const resolveEndpointsConfig = <T>(
   input: T & EndpointsInputConfig & PreviouslyResolved
 ): T & EndpointsResolvedConfig => {
   const useDualstackEndpoint = normalizeProvider(input.useDualstackEndpoint ?? false);
-  const { endpoint, useFipsEndpoint, urlParser } = input;
-  return {
-    ...input,
-    tls: input.tls ?? true,
+  const { endpoint, useFipsEndpoint, urlParser, tls } = input;
+  return Object.assign(input, {
+    tls: tls ?? true,
     endpoint: endpoint
       ? normalizeProvider(typeof endpoint === "string" ? urlParser(endpoint) : endpoint)
       : () => getEndpointFromRegion({ ...input, useDualstackEndpoint, useFipsEndpoint }),
     isCustomEndpoint: !!endpoint,
     useDualstackEndpoint,
-  };
+  });
 };

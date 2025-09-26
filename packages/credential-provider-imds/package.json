@@ -1,6 +1,6 @@
 {
   "name": "@smithy/credential-provider-imds",
-  "version": "4.0.1",
+  "version": "4.1.2",
   "description": "AWS credential provider that sources credentials from the EC2 instance metadata service and ECS container metadata service",
   "main": "./dist-cjs/index.js",
   "module": "./dist-es/index.js",
@@ -26,6 +26,7 @@
     "url": "https://aws.amazon.com/javascript/"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "dependencies": {
     "@smithy/node-config-provider": "workspace:^",
     "@smithy/property-provider": "workspace:^",
@@ -54,10 +55,10 @@
   "files": [
     "dist-*/**"
   ],
-  "homepage": "https://github.com/awslabs/smithy-typescript/tree/main/packages/credential-provider-imds",
+  "homepage": "https://github.com/smithy-lang/smithy-typescript/tree/main/packages/credential-provider-imds",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/smithy-typescript.git",
+    "url": "https://github.com/smithy-lang/smithy-typescript.git",
     "directory": "packages/credential-provider-imds"
   },
   "typedoc": {

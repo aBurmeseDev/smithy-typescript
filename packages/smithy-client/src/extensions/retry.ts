@@ -1,4 +1,4 @@
-import { Provider, RetryStrategy, RetryStrategyConfiguration, RetryStrategyV2 } from "@smithy/types";
+import type { Provider, RetryStrategy, RetryStrategyConfiguration, RetryStrategyV2 } from "@smithy/types";
 
 /**
  * @internal
@@ -9,13 +9,12 @@ export type PartialRetryRuntimeConfigType = Partial<{ retryStrategy: Provider<Re
  * @internal
  */
 export const getRetryConfiguration = (runtimeConfig: PartialRetryRuntimeConfigType) => {
-  let _retryStrategy = runtimeConfig.retryStrategy!;
   return {
     setRetryStrategy(retryStrategy: Provider<RetryStrategyV2 | RetryStrategy>): void {
-      _retryStrategy = retryStrategy;
+      runtimeConfig.retryStrategy = retryStrategy;
     },
     retryStrategy(): Provider<RetryStrategyV2 | RetryStrategy> {
-      return _retryStrategy;
+      return runtimeConfig.retryStrategy!;
     },
   };
 };

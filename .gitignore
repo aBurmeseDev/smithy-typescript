@@ -34,12 +34,14 @@ smithy-typescript-integ-tests/dist
 smithy-typescript-integ-tests/node_modules
 smithy-typescript-integ-tests/yarn.lock
 
-# Issue https://github.com/awslabs/smithy-typescript/issues/425
+# Issue https://github.com/smithy-lang/smithy-typescript/issues/425
 smithy-typescript-codegen/bin/
 smithy-typescript-codegen-test/bin/
 smithy-typescript-ssdk-codegen-test-utils/bin/
 smithy-typescript-codegen-test/example-weather-customizations/bin/
 
+testbed/bundlers/dist
+testbed/bundlers/dist-min
 **/node_modules/
 **/*.tsbuildinfo
 **/*.d.ts

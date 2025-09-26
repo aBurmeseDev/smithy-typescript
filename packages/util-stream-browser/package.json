@@ -1,6 +1,6 @@
 {
   "name": "@smithy/util-stream-browser",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "scripts": {
     "build": "concurrently 'yarn:build:es' 'yarn:build:types'",
     "build:es": "yarn g:tsc -p tsconfig.es.json",
@@ -20,6 +20,7 @@
     "url": "https://aws.amazon.com/javascript/"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "dependencies": {
     "@smithy/fetch-http-handler": "workspace:^",
     "@smithy/types": "workspace:^",
@@ -44,10 +45,10 @@
   "files": [
     "dist-*/**"
   ],
-  "homepage": "https://github.com/awslabs/smithy-typescript/tree/main/packages/util-stream-browser",
+  "homepage": "https://github.com/smithy-lang/smithy-typescript/tree/main/packages/util-stream-browser",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/smithy-typescript.git",
+    "url": "https://github.com/smithy-lang/smithy-typescript.git",
     "directory": "packages/util-stream-browser"
   },
   "typedoc": {

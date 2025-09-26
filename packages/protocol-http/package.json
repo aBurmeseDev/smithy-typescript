@@ -1,6 +1,6 @@
 {
   "name": "@smithy/protocol-http",
-  "version": "5.0.1",
+  "version": "5.2.1",
   "scripts": {
     "build": "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types && yarn build:types:downlevel'",
     "build:cjs": "node ../../scripts/inline protocol-http",
@@ -23,6 +23,7 @@
     "url": "https://smithy.io"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "dependencies": {
     "@smithy/types": "workspace:^",
     "tslib": "^2.6.2"
@@ -40,10 +41,10 @@
   "files": [
     "dist-*/**"
   ],
-  "homepage": "https://github.com/awslabs/smithy-typescript/tree/main/packages/protocol-http",
+  "homepage": "https://github.com/smithy-lang/smithy-typescript/tree/main/packages/protocol-http",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/smithy-typescript.git",
+    "url": "https://github.com/smithy-lang/smithy-typescript.git",
     "directory": "packages/protocol-http"
   },
   "devDependencies": {

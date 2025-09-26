@@ -91,7 +91,7 @@ public final class EndpointsV2Generator implements Runnable {
         service = settings.getService(model);
         this.settings = settings;
         endpointRuleSetTrait = service.getTrait(EndpointRuleSetTrait.class)
-            .orElseThrow(() -> new RuntimeException("service missing EndpointRuleSetTrait"));
+            .orElseThrow(() -> new RuntimeException("service or model preprocessor missing EndpointRuleSetTrait"));
         ruleSetParameterFinder = new RuleSetParameterFinder(service);
     }
 
@@ -132,7 +132,9 @@ public final class EndpointsV2Generator implements Runnable {
 
                 writer.write("");
                 writer.openBlock(
-                    "export type ClientResolvedEndpointParameters = ClientInputEndpointParameters & {",
+                    """
+                    export type ClientResolvedEndpointParameters = Omit<ClientInputEndpointParameters, "endpoint"> & {
+                    """,
                     "};",
                     () -> {
                         writer.write("defaultSigningName: string;");
@@ -146,8 +148,7 @@ public final class EndpointsV2Generator implements Runnable {
                         + "): T & ClientResolvedEndpointParameters => {",
                     "}",
                     () -> {
-                        writer.openBlock("return {", "}", () -> {
-                            writer.write("...options,");
+                        writer.openBlock("return Object.assign(options, {", "});", () -> {
                             ObjectNode ruleSet = endpointRuleSetTrait.getRuleSet().expectObjectNode();
                             ruleSet.getObjectMember("parameters").ifPresent(parameters -> {
                                 parameters.accept(new RuleSetParametersVisitor(writer, true));

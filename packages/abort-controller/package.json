@@ -1,6 +1,6 @@
 {
   "name": "@smithy/abort-controller",
-  "version": "4.0.1",
+  "version": "4.1.1",
   "description": "A simple abort controller library",
   "main": "./dist-cjs/index.js",
   "module": "./dist-es/index.js",
@@ -24,6 +24,7 @@
     "url": "https://aws.amazon.com/javascript/"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "dependencies": {
     "@smithy/types": "workspace:^",
     "tslib": "^2.6.2"
@@ -41,10 +42,10 @@
   "files": [
     "dist-*/**"
   ],
-  "homepage": "https://github.com/awslabs/smithy-typescript/tree/main/packages/abort-controller",
+  "homepage": "https://github.com/smithy-lang/smithy-typescript/tree/main/packages/abort-controller",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/smithy-typescript.git",
+    "url": "https://github.com/smithy-lang/smithy-typescript.git",
     "directory": "packages/abort-controller"
   },
   "devDependencies": {

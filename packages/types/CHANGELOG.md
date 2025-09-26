@@ -1,5 +1,45 @@
 # Change Log
 
+## 4.5.0
+
+### Minor Changes
+
+- bb7c1c1: schema code size optimizations
+
+## 4.4.0
+
+### Minor Changes
+
+- 64cda93: set sideEffects bundler metadata
+
+### Patch Changes
+
+- f884df7: enforce consistent-type-imports
+
+## 4.3.2
+
+### Patch Changes
+
+- 64e033f: schema serde: http binding and cbor serializer refactoring
+
+## 4.3.1
+
+### Patch Changes
+
+- 358c1ff: fix Command interface compatibility with type transformers
+
+## 4.3.0
+
+### Minor Changes
+
+- 0547fab: add types for schemas
+
+## 4.2.0
+
+### Minor Changes
+
+- e917e61: enforce singular config object during client instantiation
+
 ## 4.1.0
 
 ### Minor Changes

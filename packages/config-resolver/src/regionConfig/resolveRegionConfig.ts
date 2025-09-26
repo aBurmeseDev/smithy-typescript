@@ -1,4 +1,4 @@
-import { Provider } from "@smithy/types";
+import type { Provider } from "@smithy/types";
 
 import { getRealRegion } from "./getRealRegion";
 import { isFipsRegion } from "./isFipsRegion";
@@ -45,8 +45,7 @@ export const resolveRegionConfig = <T>(input: T & RegionInputConfig & Previously
     throw new Error("Region is missing");
   }
 
-  return {
-    ...input,
+  return Object.assign(input, {
     region: async () => {
       if (typeof region === "string") {
         return getRealRegion(region);
@@ -61,5 +60,5 @@ export const resolveRegionConfig = <T>(input: T & RegionInputConfig & Previously
       }
       return typeof useFipsEndpoint !== "function" ? Promise.resolve(!!useFipsEndpoint) : useFipsEndpoint();
     },
-  };
+  });
 };

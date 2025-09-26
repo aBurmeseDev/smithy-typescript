@@ -14,7 +14,6 @@ import software.amazon.smithy.model.knowledge.ServiceIndex;
 import software.amazon.smithy.model.knowledge.TopDownIndex;
 import software.amazon.smithy.model.shapes.ServiceShape;
 import software.amazon.smithy.model.shapes.ShapeId;
-import software.amazon.smithy.rulesengine.traits.EndpointRuleSetTrait;
 import software.amazon.smithy.typescript.codegen.CodegenUtils;
 import software.amazon.smithy.typescript.codegen.TypeScriptCodegenContext;
 import software.amazon.smithy.typescript.codegen.TypeScriptDependency;
@@ -57,18 +56,9 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
         );
         return List.of(
             RuntimeClientPlugin.builder()
-                .servicePredicate((m, s) -> s.hasTrait(EndpointRuleSetTrait.ID))
                 .withConventions(
                     TypeScriptDependency.SMITHY_CORE.dependency,
                     "HttpAuthSchemeEndpointRuleSet",
-                    Convention.HAS_MIDDLEWARE)
-                .withAdditionalClientParams(httpAuthSchemeParametersProvider)
-                .build(),
-            RuntimeClientPlugin.builder()
-                .servicePredicate((m, s) -> !s.hasTrait(EndpointRuleSetTrait.ID))
-                .withConventions(
-                    TypeScriptDependency.SMITHY_CORE.dependency,
-                    "HttpAuthScheme",
                     Convention.HAS_MIDDLEWARE)
                 .withAdditionalClientParams(httpAuthSchemeParametersProvider)
                 .build(),
@@ -248,6 +238,15 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
         w.write(" {");
         w.indent();
         w.addDependency(TypeScriptDependency.SMITHY_TYPES);
+
+        w.addImport("Provider", null, TypeScriptDependency.SMITHY_TYPES);
+        w.writeDocs("""
+            A comma-separated list of case-sensitive auth scheme names.
+            An auth scheme name is a fully qualified auth scheme ID with the namespace prefix trimmed.
+            For example, the auth scheme with ID aws.auth#sigv4 is named sigv4.
+            @public""");
+        w.write("authSchemePreference?: string[] | Provider<string[]>;\n");
+
         w.addImport("HttpAuthScheme", null, TypeScriptDependency.SMITHY_TYPES);
         w.writeDocs("""
             Configuration of HttpAuthSchemes for a client which provides \
@@ -314,6 +313,15 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
         w.write(" {");
         w.indent();
         w.addDependency(TypeScriptDependency.SMITHY_TYPES);
+
+        w.addImport("Provider", null, TypeScriptDependency.SMITHY_TYPES);
+        w.writeDocs("""
+            A comma-separated list of case-sensitive auth scheme names.
+            An auth scheme name is a fully qualified auth scheme ID with the namespace prefix trimmed.
+            For example, the auth scheme with ID aws.auth#sigv4 is named sigv4.
+            @public""");
+        w.write("readonly authSchemePreference: Provider<string[]>;\n");
+
         w.addImport("HttpAuthScheme", null, TypeScriptDependency.SMITHY_TYPES);
         w.writeDocs("""
             Configuration of HttpAuthSchemes for a client which provides \
@@ -344,13 +352,12 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
       const region = config.region ? normalizeProvider(config.region) : undefined;
       const apiKey = memoizeIdentityProvider(config.apiKey, isIdentityExpired, doesIdentityRequireRefresh);
       const token = memoizeIdentityProvider(config.token, isIdentityExpired, doesIdentityRequireRefresh);
-      return {
-        ...config,
+      return Object.assign(config, {
         credentials,
         region,
         apiKey,
         token,
-      } as HttpAuthSchemeResolvedConfig;
+      }) as HttpAuthSchemeResolvedConfig;
     };
     */
     private void generateResolveHttpAuthSchemeConfigFunction(
@@ -364,7 +371,8 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
             .filter(e -> e.getValue().previouslyResolved().isPresent())
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         w.writeDocs("@internal");
-        w.writeInline("export const resolveHttpAuthSchemeConfig = <T>(config: T & HttpAuthSchemeInputConfig");
+        w.writeInline("""
+            export const resolveHttpAuthSchemeConfig = <T>(config: T & HttpAuthSchemeInputConfig""");
         if (!previousResolvedFunctions.isEmpty()) {
             w.writeInline(" & ");
             Iterator<ResolveConfigFunction> iter = previousResolvedFunctions.values().iterator();
@@ -376,7 +384,8 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
                 }
             }
         }
-        w.write("): T & HttpAuthSchemeResolvedConfig => {");
+        w.write("""
+            ): T & HttpAuthSchemeResolvedConfig => {""");
         w.indent();
         w.pushState(ResolveHttpAuthSchemeConfigFunctionConfigFieldsCodeSection.builder()
             .service(s.getService())
@@ -402,20 +411,33 @@ public final class AddHttpAuthSchemePlugin implements HttpAuthTypeScriptIntegrat
         Integer i = 0;
         String configName = "config";
         for (ResolveConfigFunction resolveConfigFunction : resolveConfigFunctions.values()) {
-            w.write("const config_$L = $T($L);", i, resolveConfigFunction.resolveConfigFunction(), configName);
+            w.openBlock(
+                "const config_$L = $T($L",
+                ");",
+                i,
+                resolveConfigFunction.resolveConfigFunction(),
+                configName,
+                () -> {
+                    for (String addArg : resolveConfigFunction.addArgs()) {
+                        w.writeInline(", $L", addArg);
+                    }
+                }
+            );
             configName = "config_" + i;
             i++;
         }
-        w.write("return {");
+        w.write("return Object.assign(");
         w.indent();
-        w.write("...$L,", configName);
+        w.write("$L, {", configName);
+        w.addImport("normalizeProvider", null, TypeScriptDependency.UTIL_MIDDLEWARE);
+        w.write("authSchemePreference: normalizeProvider(config.authSchemePreference ?? []),");
         for (ConfigField configField : configFields.values()) {
             if (configField.configFieldWriter().isPresent()) {
                 w.write("$L,", configField.name());
             }
         }
         w.dedent();
-        w.write("} as T & HttpAuthSchemeResolvedConfig;");
+        w.write("}) as T & HttpAuthSchemeResolvedConfig;");
         w.popState();
         w.dedent();
         w.write("};");

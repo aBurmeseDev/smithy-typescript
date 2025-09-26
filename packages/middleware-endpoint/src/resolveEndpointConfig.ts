@@ -1,4 +1,4 @@
-import { Endpoint, EndpointParameters, EndpointV2, Logger, Provider, UrlParser } from "@smithy/types";
+import type { Endpoint, EndpointParameters, EndpointV2, Logger, Provider, UrlParser } from "@smithy/types";
 import { normalizeProvider } from "@smithy/util-middleware";
 
 import { getEndpointFromConfig } from "./adaptors/getEndpointFromConfig";
@@ -56,7 +56,6 @@ export interface EndpointInputConfig<T extends EndpointParameters = EndpointPara
  */
 interface PreviouslyResolved<T extends EndpointParameters = EndpointParameters> {
   urlParser: UrlParser;
-  region: Provider<string>;
   endpointProvider: (params: T, context?: { logger?: Logger }) => EndpointV2;
   logger?: Logger;
   serviceId?: string;
@@ -65,7 +64,7 @@ interface PreviouslyResolved<T extends EndpointParameters = EndpointParameters> 
 /**
  * @internal
  *
- * This supercedes the similarly named EndpointsResolvedConfig (no parametric types)
+ * This supersedes the similarly named EndpointsResolvedConfig (no parametric types)
  * from resolveEndpointsConfig.ts in \@smithy/config-resolver.
  */
 export interface EndpointResolvedConfig<T extends EndpointParameters = EndpointParameters> {
@@ -86,8 +85,11 @@ export interface EndpointResolvedConfig<T extends EndpointParameters = EndpointP
 
   /**
    * Whether the endpoint is specified by caller.
+   * This should be used over checking the existence of `endpoint`, since
+   * that may have been set by other means, such as the default regional
+   * endpoint provider function.
+   *
    * @internal
-   * @deprecated
    */
   isCustomEndpoint?: boolean;
 
@@ -121,21 +123,20 @@ export const resolveEndpointConfig = <T, P extends EndpointParameters = Endpoint
   input: T & EndpointInputConfig<P> & PreviouslyResolved<P>
 ): T & EndpointResolvedConfig<P> => {
   const tls = input.tls ?? true;
-  const { endpoint } = input;
+  const { endpoint, useDualstackEndpoint, useFipsEndpoint } = input;
 
   const customEndpointProvider =
     endpoint != null ? async () => toEndpointV1(await normalizeProvider(endpoint)()) : undefined;
 
   const isCustomEndpoint = !!endpoint;
 
-  const resolvedConfig = {
-    ...input,
+  const resolvedConfig = Object.assign(input, {
     endpoint: customEndpointProvider,
     tls,
     isCustomEndpoint,
-    useDualstackEndpoint: normalizeProvider(input.useDualstackEndpoint ?? false),
-    useFipsEndpoint: normalizeProvider(input.useFipsEndpoint ?? false),
-  } as T & EndpointResolvedConfig<P>;
+    useDualstackEndpoint: normalizeProvider(useDualstackEndpoint ?? false),
+    useFipsEndpoint: normalizeProvider(useFipsEndpoint ?? false),
+  }) as T & EndpointResolvedConfig<P>;
 
   let configuredEndpointPromise: undefined | Promise<string | undefined> = undefined;
   resolvedConfig.serviceConfiguredEndpoint = async () => {

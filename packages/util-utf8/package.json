@@ -1,6 +1,6 @@
 {
   "name": "@smithy/util-utf8",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "A UTF-8 string <-> UInt8Array converter",
   "main": "./dist-cjs/index.js",
   "module": "./dist-es/index.js",
@@ -22,6 +22,7 @@
     "url": "https://aws.amazon.com/javascript/"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "dependencies": {
     "@smithy/util-buffer-from": "workspace:^",
     "tslib": "^2.6.2"
@@ -51,10 +52,10 @@
     "./dist-es/toUtf8": "./dist-es/toUtf8.browser"
   },
   "react-native": {},
-  "homepage": "https://github.com/awslabs/smithy-typescript/tree/main/packages/util-utf8",
+  "homepage": "https://github.com/smithy-lang/smithy-typescript/tree/main/packages/util-utf8",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/smithy-typescript.git",
+    "url": "https://github.com/smithy-lang/smithy-typescript.git",
     "directory": "packages/util-utf8"
   },
   "typedoc": {

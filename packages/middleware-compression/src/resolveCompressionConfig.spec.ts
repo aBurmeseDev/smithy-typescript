@@ -1,4 +1,4 @@
-import { test as it, vi, describe, expect } from "vitest";
+import { describe, expect,test as it, vi } from "vitest";
 
 import { resolveCompressionConfig } from "./resolveCompressionConfig";
 
@@ -8,6 +8,14 @@ describe(resolveCompressionConfig.name, () => {
     disableRequestCompression: false,
     requestMinCompressionSizeBytes: 0,
   };
+
+  it("maintains object custody", () => {
+    const input = {
+      disableRequestCompression: false,
+      requestMinCompressionSizeBytes: 10_000,
+    };
+    expect(resolveCompressionConfig(input)).toBe(input);
+  });
 
   it("should throw an error if requestMinCompressionSizeBytes is less than 0", async () => {
     const requestMinCompressionSizeBytes = -1;
